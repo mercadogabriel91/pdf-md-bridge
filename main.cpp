@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <filesystem>
 #include <fstream>
+#include <iterator>
+#include <stdexcept>
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -10,11 +11,6 @@
 #include <unordered_set>
 #include <poppler-document.h>
 #include <poppler-page.h>
-
-// This HC path will be removed and replaced by read op of the buffer on file selection
-const std::string PROJECT_ROOT = "/Users/gaben/dev/personal/pdf-md-bridge";
-const std::string OUTPUT_PATH = PROJECT_ROOT + "/output";
-const std::string PDF_FILE_PATH = PROJECT_ROOT + "/Gabriel-Mercado-CV-original.pdf";
 
 static std::string ustringToUtf8(const poppler::ustring &u) {
     poppler::byte_array bytes = u.to_utf8();
@@ -112,15 +108,6 @@ static double bucketFontSize(double size) {
     return std::round(size * 2.0) / 2.0;
 }
 
-// Inner Function: Focuses only on loading and validation
-std::unique_ptr<poppler::document> loadPdf(const std::string &filePath) {
-    std::unique_ptr<poppler::document> doc(poppler::document::load_from_file(filePath));
-    if (!doc) {
-        throw std::runtime_error("Failed to load PDF file. File not found or corrupted: " + filePath);
-    }
-    return doc;
-}
-
 struct Token {
     std::string text;
     bool has_space_after = false;
@@ -187,14 +174,12 @@ static std::string normalizeForFurniture(const std::string &s) {
     return out;
 }
 
-int main() {
-    std::unique_ptr<poppler::document> doc;
-    try {
-        doc = loadPdf(PDF_FILE_PATH);
-        std::cout << "Document loaded successfully!\n";
-    } catch (const std::exception &err) {
-        std::cerr << err.what() << "\n";
-        return 1;
+static std::string convert_pdf_to_markdown(const uint8_t *data, size_t len) {
+    std::vector<char> pdf_bytes(reinterpret_cast<const char *>(data),
+                                reinterpret_cast<const char *>(data) + len);
+    std::unique_ptr<poppler::document> doc(poppler::document::load_from_data(&pdf_bytes));
+    if (!doc) {
+        throw std::runtime_error("Failed to load PDF from buffer (corrupted or not a PDF).");
     }
 
     const int num_of_pages = doc->pages();
@@ -422,11 +407,39 @@ int main() {
         emitBlank();
     }
 
-    std::filesystem::create_directories(OUTPUT_PATH);
-    std::ofstream outFile(OUTPUT_PATH + "/doc.md");
-    if (outFile.is_open()) {
-        outFile << md;
-        outFile.close();
+    return md;
+}
+
+static std::vector<uint8_t> readFileBytes(const char *path) {
+    std::ifstream in(path, std::ios::binary);
+    if (!in) {
+        throw std::runtime_error(std::string("Failed to open file: ") + path);
+    }
+    return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <input.pdf> [output.md]\n";
+        return 1;
+    }
+
+    try {
+        const std::vector<uint8_t> pdf_bytes = readFileBytes(argv[1]);
+        const std::string md = convert_pdf_to_markdown(pdf_bytes.data(), pdf_bytes.size());
+
+        if (argc >= 3) {
+            std::ofstream out(argv[2]);
+            if (!out) {
+                throw std::runtime_error(std::string("Failed to open for write: ") + argv[2]);
+            }
+            out << md;
+        } else {
+            std::cout << md;
+        }
+    } catch (const std::exception &err) {
+        std::cerr << err.what() << "\n";
+        return 1;
     }
 
     return 0;
