@@ -19,3 +19,7 @@ output/
 
 # Local docs / notes (not part of the repo)
 docs/
+
+# WASM build artifacts (regenerate with scripts/build-wasm.sh)
+web/pdf_md_bridge.js
+web/pdf_md_bridge.wasm

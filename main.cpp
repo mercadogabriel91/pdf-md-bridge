@@ -1,16 +1,23 @@
 #include <iostream>
 #include <vector>
+#ifndef __EMSCRIPTEN__
 #include <fstream>
 #include <iterator>
+#endif
 #include <stdexcept>
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <unordered_map>
 #include <unordered_set>
 #include <poppler-document.h>
 #include <poppler-page.h>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
 
 static std::string ustringToUtf8(const poppler::ustring &u) {
     poppler::byte_array bytes = u.to_utf8();
@@ -410,6 +417,40 @@ static std::string convert_pdf_to_markdown(const uint8_t *data, size_t len) {
     return md;
 }
 
+#ifdef __EMSCRIPTEN__
+
+extern "C" {
+
+EMSCRIPTEN_KEEPALIVE
+char *convert(const uint8_t *data, int len) {
+    if (!data || len <= 0) {
+        return nullptr;
+    }
+    try {
+        const std::string md =
+                convert_pdf_to_markdown(data, static_cast<size_t>(len));
+        char *out = static_cast<char *>(std::malloc(md.size() + 1));
+        if (!out) {
+            return nullptr;
+        }
+        std::memcpy(out, md.data(), md.size());
+        out[md.size()] = '\0';
+        return out;
+    } catch (const std::exception &err) {
+        std::cerr << err.what() << '\n';
+        return nullptr;
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE
+void free_result(char *p) {
+    std::free(p);
+}
+
+} // extern "C"
+
+#else
+
 static std::vector<uint8_t> readFileBytes(const char *path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
@@ -444,3 +485,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+#endif // __EMSCRIPTEN__
