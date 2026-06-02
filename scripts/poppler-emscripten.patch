@@ -1,0 +1,31 @@
+diff --git a/poppler/Object.cc b/poppler/Object.cc
+index 53a08dc..6b81544 100644
+--- a/poppler/Object.cc
++++ b/poppler/Object.cc
+@@ -34,6 +34,10 @@
+ #include "XRef.h"
+ #include "goo/gmem.h"
+ 
++Object::Object(std::unique_ptr<Array> arrayA) : type { objArray }, data { std::shared_ptr<Array>(std::move(arrayA)) } { }
++
++Object::Object(std::unique_ptr<Dict> &&dictA) : type { objDict }, data { std::shared_ptr<Dict>(std::move(dictA)) } { }
++
+ //------------------------------------------------------------------------
+ // Object
+ //------------------------------------------------------------------------
+diff --git a/poppler/Object.h b/poppler/Object.h
+index 33e3557..2080c2a 100644
+--- a/poppler/Object.h
++++ b/poppler/Object.h
+@@ -233,9 +233,9 @@ public:
+ 
+     explicit Object(long long int64gA) : type { objInt64 }, data { int64gA } { }
+ 
+-    explicit Object(std::unique_ptr<Array> arrayA) : type { objArray }, data { std::shared_ptr<Array>(std::move(arrayA)) } { }
++    explicit Object(std::unique_ptr<Array> arrayA);
+ 
+-    explicit Object(std::unique_ptr<Dict> &&dictA) : type { objDict }, data { std::shared_ptr<Dict>(std::move(dictA)) } { }
++    explicit Object(std::unique_ptr<Dict> &&dictA);
+ 
+     template<typename StreamType>
+         requires(std::is_base_of_v<Stream, StreamType>)

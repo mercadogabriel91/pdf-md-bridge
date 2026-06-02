@@ -17,8 +17,8 @@ cmake-build-*/
 *.pdf
 output/
 
-# Local docs / notes (not part of the repo)
-docs/
+# Local docs (except tracked guides)
+docs/*
 
 # WASM build artifacts (regenerate with scripts/build-wasm.sh)
 web/pdf_md_bridge.js

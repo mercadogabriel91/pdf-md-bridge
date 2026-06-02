@@ -18,7 +18,7 @@ for path in \
   "$ZLIB/lib/libz.a"; do
   if [[ ! -f "$path" ]]; then
     echo "Missing dependency: $path" >&2
-    echo "Build Poppler for WASM first (see docs/free-tier-plan.md Phase 2)." >&2
+    echo "Build Poppler for WASM first (see docs/wasm-deps.md)." >&2
     exit 1
   fi
 done
