@@ -1,0 +1,21 @@
+# Emscripten SDK (large, installed locally)
+emsdk/
+
+# Native / CMake build output
+build/
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+
+# Local test PDFs and generated output
+*.pdf
+output/
+
+# Local docs / notes (not part of the repo)
+docs/
