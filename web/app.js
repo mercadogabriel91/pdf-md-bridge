@@ -1,34 +1,53 @@
-import createPdfMdBridgeModule from "./pdf_md_bridge.js";
+let worker;
+let nextId = 0;
+const pending = new Map();
 
-let modulePromise;
+function getWorker() {
+  if (!worker) {
+    worker = new Worker(new URL("./converter-worker.js", import.meta.url), {
+      type: "module",
+    });
 
-function getModule() {
-  if (!modulePromise) {
-    modulePromise = createPdfMdBridgeModule();
+    worker.onmessage = (event) => {
+      const { type, id, markdown, message } = event.data;
+      const job = pending.get(id);
+      if (!job) {
+        return;
+      }
+      pending.delete(id);
+
+      if (type === "result") {
+        job.resolve(markdown);
+      } else if (type === "error") {
+        job.reject(new Error(message));
+      }
+    };
+
+    worker.onerror = (event) => {
+      for (const [, job] of pending) {
+        job.reject(new Error(event.message || "Worker failed"));
+      }
+      pending.clear();
+      worker = undefined;
+    };
   }
-  return modulePromise;
+  return worker;
 }
 
-export async function convertPdfToMarkdown(bytes) {
-  const mod = await getModule();
-  const ptr = mod._malloc(bytes.length);
-  if (ptr === 0) {
-    throw new Error("WASM malloc failed");
+function toTransferableBuffer(bytes) {
+  if (bytes.byteOffset === 0 && bytes.byteLength === bytes.buffer.byteLength) {
+    return bytes.buffer;
   }
+  return bytes.slice().buffer;
+}
 
-  try {
-    mod.HEAPU8.set(bytes, ptr);
-    const resultPtr = mod._convert(ptr, bytes.length);
-    if (resultPtr === 0) {
-      throw new Error("Conversion failed (invalid PDF or out of memory)");
-    }
+export function convertPdfToMarkdown(bytes) {
+  const id = ++nextId;
 
-    try {
-      return mod.UTF8ToString(resultPtr);
-    } finally {
-      mod._free_result(resultPtr);
-    }
-  } finally {
-    mod._free(ptr);
-  }
+  return new Promise((resolve, reject) => {
+    pending.set(id, { resolve, reject });
+
+    const buffer = toTransferableBuffer(bytes);
+    getWorker().postMessage({ type: "convert", id, buffer }, [buffer]);
+  });
 }
