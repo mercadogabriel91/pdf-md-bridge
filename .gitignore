@@ -17,9 +17,16 @@ cmake-build-*/
 *.pdf
 output/
 
-# Local docs (except tracked guides)
+# Local docs (private notes); un-ignore compliance + rebuild guides below
 docs/*
+!docs/wasm-deps.md
+!docs/gpl-compliance.md
 
 # WASM build artifacts (regenerate with scripts/build-wasm.sh)
 web/pdf_md_bridge.js
 web/pdf_md_bridge.wasm
+extension/pdf_md_bridge.js
+extension/pdf_md_bridge.wasm
+# Copied from web/ by scripts/sync-extension.sh — track web/ as source of truth
+extension/app.js
+extension/converter-worker.js

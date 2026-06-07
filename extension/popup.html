@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF → Markdown</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      width: 320px;
+      margin: 0;
+      padding: 1rem;
+      line-height: 1.4;
+    }
+    h1 {
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem;
+    }
+    p {
+      font-size: 0.85rem;
+      color: #555;
+      margin: 0 0 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+    input[type="file"] {
+      width: 100%;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+    .status {
+      font-size: 0.85rem;
+      color: #555;
+      margin: 0;
+    }
+    .error { color: #b00020; }
+    .hint {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>PDF → Markdown</h1>
+  <p>Pick a PDF from your computer. Conversion runs locally; the .md file downloads when done.</p>
+
+  <label>
+    PDF file
+    <input id="file" type="file" accept="application/pdf" />
+  </label>
+
+  <p id="status" class="status">Choose a PDF to convert.</p>
+  <p class="hint">Keep this popup open until the download starts.</p>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

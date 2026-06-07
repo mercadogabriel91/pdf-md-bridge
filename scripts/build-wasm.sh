@@ -47,3 +47,5 @@ em++ "$ROOT/main.cpp" \
   -o "$OUT_DIR/pdf_md_bridge.js"
 
 echo "Built $OUT_DIR/pdf_md_bridge.js and $OUT_DIR/pdf_md_bridge.wasm"
+
+"$ROOT/scripts/sync-extension.sh"

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "PDF to Markdown",
+  "version": "0.1.0",
+  "description": "Convert PDF files to Markdown entirely in your browser. No server, no upload.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PDF → Markdown"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pdf_md_bridge.js",
+        "pdf_md_bridge.wasm",
+        "converter-worker.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
