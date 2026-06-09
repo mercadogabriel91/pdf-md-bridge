@@ -1,0 +1,37 @@
+pdf-md-bridge
+Copyright (C) Gabriel Mercado and contributors
+
+This project is licensed under the GNU General Public License version 2 (GPLv2).
+See LICENSE for the full license text.
+
+Corresponding source: https://github.com/mercadogabriel91/pdf-md-bridge
+
+---
+
+Third-party components linked into pdf_md_bridge.wasm (browser / WASM build)
+
+Poppler 26.04.0
+  Copyright (C) The Poppler developers
+  License: GNU General Public License version 2 (GPLv2)
+  https://poppler.freedesktop.org/
+
+FreeType 2.13.3
+  Copyright (C) The FreeType Project
+  License: FreeType License (FTL) — GPL-compatible
+  https://freetype.org/
+
+zlib 1.3.1
+  Copyright (C) Jean-loup Gailly and Mark Adler
+  License: zlib License — GPL-compatible
+  https://zlib.net/
+
+---
+
+Rebuild notes
+
+The WASM module is built with Emscripten and statically links the libraries above.
+See docs/wasm-deps.md for dependency versions, build order, and the required
+Poppler Emscripten patch (scripts/poppler-emscripten.patch).
+
+Native macOS builds may use Homebrew Poppler instead; the same Poppler version
+(26.04.0) is recommended so behavior matches the WASM build.

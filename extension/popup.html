@@ -43,6 +43,20 @@
       color: #888;
       margin-top: 0.75rem;
     }
+    footer {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+    footer a {
+      color: #1565c0;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -56,6 +70,10 @@
 
   <p id="status" class="status">Choose a PDF to convert.</p>
   <p class="hint">Keep this popup open until the download starts.</p>
+
+  <footer>
+    <a href="https://github.com/mercadogabriel91/pdf-md-bridge" target="_blank" rel="noopener noreferrer">Source code (GPLv2)</a>
+  </footer>
 
   <script type="module" src="popup.js"></script>
 </body>

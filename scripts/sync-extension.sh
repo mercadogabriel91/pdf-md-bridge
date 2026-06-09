@@ -14,4 +14,9 @@ for file in app.js converter-worker.js pdf_md_bridge.js pdf_md_bridge.wasm; do
   cp "$src" "$EXT/$file"
 done
 
+if [[ ! -f "$EXT/NOTICE.txt" ]]; then
+  echo "Missing $EXT/NOTICE.txt — required for GPL compliance in the store package." >&2
+  exit 1
+fi
+
 echo "Synced WASM runtime into $EXT/"

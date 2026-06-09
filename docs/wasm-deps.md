@@ -133,9 +133,24 @@ cd ~/dev/pdf-md-wasm-deps/poppler && git apply ~/dev/personal/pdf-md-bridge/scri
 
 ---
 
-## How to rebuild from scratch
+## Prerequisites
 
-Prerequisites: [Emscripten](https://emscripten.org/) installed (`emsdk` in `pdf-md-bridge/emsdk` or elsewhere), `cmake` on PATH, `source ~/.zprofile`.
+[Emscripten](https://emscripten.org/) (`emsdk`), `cmake` on PATH, and `source ~/.zprofile` (or `source emsdk/emsdk_env.sh`).
+
+**Emscripten version:** This project has been built with **Emscripten 5.0.x** (`emcc --version`). Older 3.x releases may work but are not routinely tested. Install via the repo-local SDK:
+
+```bash
+cd pdf-md-bridge/emsdk
+./emsdk install latest
+./emsdk activate latest
+source ./emsdk_env.sh
+```
+
+Or point `EMSDK` at your own install when running `build-wasm.sh`.
+
+---
+
+## How to rebuild from scratch
 
 ### 1. FreeType
 
@@ -212,6 +227,16 @@ cd ~/dev/personal/pdf-md-bridge
 ./scripts/build-wasm.sh
 ```
 
+This writes `web/pdf_md_bridge.js` and `web/pdf_md_bridge.wasm`, then runs `scripts/sync-extension.sh`, which copies the WASM runtime plus `web/app.js` and `web/converter-worker.js` into `extension/`. The extension’s `NOTICE.txt` is tracked in git and is **not** overwritten by sync — it must stay in the packaged folder for store releases.
+
+To sync web → extension without recompiling WASM (e.g. after editing `web/app.js` only):
+
+```bash
+./scripts/sync-extension.sh
+```
+
+For a store release, check out the tagged commit (e.g. `extension-v0.1.0`) before building so the published binary matches [corresponding source](gpl-compliance.md).
+
 ---
 
 ## How to handle this directory (do’s and don’ts)
@@ -259,9 +284,12 @@ cd ~/dev/personal/pdf-md-bridge
 | File | Purpose |
 |------|---------|
 | `scripts/build-wasm.sh` | Links `main.cpp` → `web/pdf_md_bridge.wasm` |
+| `scripts/sync-extension.sh` | Copies WASM + web JS into `extension/` |
+| `scripts/poppler-emscripten.patch` | Required Poppler fix for Emscripten libc++ |
 | `web/index.html`, `web/app.js` | Browser test page |
+| `extension/NOTICE.txt` | GPL notice shipped inside the store package |
 | `main.cpp` | Shared logic; `#ifdef __EMSCRIPTEN__` exports for WASM |
-| `docs/free-tier-plan.md` | Overall browser-extension roadmap (local) |
+| `docs/gpl-compliance.md` | Store release / GPL checklist |
 
 ---
 

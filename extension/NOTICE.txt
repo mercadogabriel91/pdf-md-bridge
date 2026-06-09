@@ -1,0 +1,26 @@
+pdf-md-bridge browser extension
+Copyright (C) Gabriel Mercado and contributors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License version 2 as published by the
+Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Full license: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Corresponding source code:
+https://github.com/mercadogabriel91/pdf-md-bridge
+
+Third-party components:
+
+  Poppler 26.04.0 — GPLv2
+  https://poppler.freedesktop.org/
+
+  FreeType 2.13.3 — FreeType License (FTL)
+  https://freetype.org/
+
+  zlib 1.3.1 — zlib License
+  https://zlib.net/
